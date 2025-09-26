@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🌐 HTTP Concepts & Todo App</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+    h1 { text-align: center; color: #333; }
+    .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    section { background: #fff; border-radius: 8px; padding: 15px; 
+              box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-bottom: 15px; }
+    h3 { margin-top: 0; color: #444; }
+    button { margin: 5px 0; padding: 8px 12px; border: none; border-radius: 4px; background: #007bff; color: white; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    input { margin: 5px 0; padding: 6px; width: 95%; border: 1px solid #ccc; border-radius: 4px; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 6px; min-height: 60px; white-space: pre-wrap; word-wrap: break-word; }
+    .todo-item { display: flex; justify-content: space-between; align-items: center; padding: 6px; border-bottom: 1px solid #eee; }
+    .todo-item:last-child { border-bottom: none; }
+    .todo-item span { flex: 1; }
+    .todo-actions button { margin-left: 5px; background: #28a745; }
+    .todo-actions button.delete { background: #dc3545; }
+    .todo-actions button.patch { background: #ffc107; }
+  </style>
+</head>
+<body>
+  <h1>🌐 HTTP Concepts & Todo App Demo</h1>
+
+  <div class="container">
+    <!-- LEFT SIDE -->
+    <div>
+      <!-- Query Parameter -->
+      <section>
+        <h3>1. Query Parameter</h3>
+        <input id="queryInput" placeholder="Enter name" />
+        <button onclick="getQuery()">Send Query</button>
+        <pre id="queryRes"></pre>
+      </section>
+
+      <!-- Path Parameter -->
+      <section>
+        <h3>2. Path Parameter</h3>
+        <input id="pathInput" placeholder="Enter user ID" />
+        <button onclick="getPath()">Send Path</button>
+        <pre id="pathRes"></pre>
+      </section>
+
+      <!-- POST -->
+      <section>
+        <h3>3. POST Request</h3>
+        <input id="postName" placeholder="Name" />
+        <input id="postRole" placeholder="Role" />
+        <button onclick="postData()">Send POST</button>
+        <pre id="postRes"></pre>
+      </section>
+
+      <!-- PUT -->
+      <section>
+        <h3>4. PUT Request</h3>
+        <input id="putId" placeholder="User ID" />
+        <input id="putName" placeholder="Updated Name" />
+        <button onclick="putData()">Send PUT</button>
+        <pre id="putRes"></pre>
+      </section>
+
+      
+      <section>
+        <h3>5. DELETE Request</h3>
+        <input id="deleteId" placeholder="User ID" />
+        <button onclick="deleteData()">Send DELETE</button>
+        <pre id="deleteRes"></pre>
+      </section>
+    </div>
+
+    
+    <div>
+      
+      <section>
+        <h3>6. HTTP Entity (JSON)</h3>
+        <button onclick="getEntity()">Get JSON</button>
+        <pre id="entityRes"></pre>
+      </section>
+
+      
+      <section>
+        <h3>7. HTTP Caching</h3>
+        <button onclick="getProducts()">Get Products</button>
+        <pre id="cacheRes"></pre>
+      </section>
+
+      
+      <section>
+        <h3>📝 Todo App (CRUD)</h3>
+        <input id="todoInput" placeholder="Enter todo" />
+        <button onclick="addTodo()">Add Todo</button>
+        <div id="todoList"></div>
+      </section>
+
+      
+      <section>
+        <h3>8. URL Encoding</h3>
+        <input id="urlInput" placeholder="Enter special text" />
+        <button onclick="urlEncode()">Encode</button>
+        <pre id="urlRes"></pre>
+      </section>
+
+      <section>
+        <h3>9. HTTP Security</h3>
+        <button onclick="getSecure()">Check Secure API</button>
+        <pre id="secRes"></pre>
+      </section>
+
+      <section>
+        <h3>10. Content Negotiation</h3>
+        <button onclick="getNegotiation('json')">Request JSON</button>
+        <button onclick="getNegotiation('html')">Request HTML</button>
+        <pre id="negRes"></pre>
+      </section>
+
+      <section>
+        <h3>11. Status Codes</h3>
+        <button onclick="getStatus(200)">200 OK</button>
+        <button onclick="getStatus(404)">404 Not Found</button>
+        <button onclick="getStatus(500)">500 Error</button>
+        <pre id="statusRes"></pre>
+      </section>
+
+      <section>
+        <h3>12. HTTP & Web Overview</h3>
+        <button onclick="getOverview()">Overview</button>
+        <pre id="overviewRes"></pre>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const baseURL = "http://localhost:5000";
+
+    
+    async function getQuery() {
+      const name = document.getElementById("queryInput").value || "Guest";
+      const res = await fetch(`${baseURL}/api/query?name=${encodeURIComponent(name)}`);
+      document.getElementById("queryRes").textContent = await res.text();
+    }
+    async function getPath() {
+      const id = document.getElementById("pathInput").value || "0";
+      const res = await fetch(`${baseURL}/api/users/${id}`);
+      document.getElementById("pathRes").textContent = JSON.stringify(await res.json(), null, 2);
+    }
+    async function postData() {
+      const name = document.getElementById("postName").value;
+      const role = document.getElementById("postRole").value;
+      const res = await fetch(`${baseURL}/api/data`, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ name, role }) });
+      document.getElementById("postRes").textContent = JSON.stringify(await res.json(), null, 2);
+    }
+    async function putData() {
+      const id = document.getElementById("putId").value;
+      const name = document.getElementById("putName").value;
+      const res = await fetch(`${baseURL}/api/users/${id}`, { method:"PUT", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ name }) });
+      document.getElementById("putRes").textContent = JSON.stringify(await res.json(), null, 2);
+    }
+    async function deleteData() {
+      const id = document.getElementById("deleteId").value;
+      const res = await fetch(`${baseURL}/api/users/${id}`, { method:"DELETE" });
+      document.getElementById("deleteRes").textContent = JSON.stringify(await res.json(), null, 2);
+    }
+    async function getEntity() {
+      const res = await fetch(`${baseURL}/api/json`);
+      document.getElementById("entityRes").textContent = JSON.stringify(await res.json(), null, 2);
+    }
+    async function getProducts() {
+      const res = await fetch(`${baseURL}/api/products`);
+      document.getElementById("cacheRes").textContent = JSON.stringify(await res.json(), null, 2);
+    }
+
+    // ==== TODO APP ====
+    async function loadTodos() {
+      const res = await fetch(`${baseURL}/api/todos`);
+      const todos = await res.json();
+      const list = document.getElementById("todoList");
+      list.innerHTML = "";
+      todos.forEach(t => {
+        const div = document.createElement("div");
+        div.className = "todo-item";
+        div.innerHTML = `
+          <span>${t.text} ${t.done ? "✅" : ""}</span>
+          <div class="todo-actions">
+            <button class="patch" onclick="toggleTodo(${t.id})">Toggle</button>
+            <button onclick="updateTodo(${t.id})">PUT</button>
+            <button class="delete" onclick="deleteTodo(${t.id})">Delete</button>
+          </div>`;
+        list.appendChild(div);
+      });
+    }
+    async function addTodo() {
+      const text = document.getElementById("todoInput").value;
+      if(!text) return;
+      await fetch(`${baseURL}/api/todos`, { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ text }) });
+      document.getElementById("todoInput").value="";
+      loadTodos();
+    }
+    async function updateTodo(id) {
+      const newText = prompt("Enter new text:");
+      if(newText){
+        await fetch(`${baseURL}/api/todos/${id}`, { method:"PUT", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ text:newText }) });
+        loadTodos();
+      }
+    }
+    async function toggleTodo(id) {
+      await fetch(`${baseURL}/api/todos/${id}`, { method:"PATCH" });
+      loadTodos();
+    }
+    async function deleteTodo(id) {
+      await fetch(`${baseURL}/api/todos/${id}`, { method:"DELETE" });
+      loadTodos();
+    }
+    loadTodos();
+
+    
+
+    async function urlEncode() {
+      const txt = document.getElementById("urlInput").value;
+      const res = await fetch(`${baseURL}/api/urlencode?text=${encodeURIComponent(txt)}`);
+      document.getElementById("urlRes").textContent = await res.text();
+    }
+    async function getSecure() {
+      const res = await fetch(`${baseURL}/api/secure`);
+      document.getElementById("secRes").textContent = await res.text();
+    }
+    async function getNegotiation(type) {
+      const res = await fetch(`${baseURL}/api/negotiation`, { headers: { "Accept": type==="json" ? "application/json" : "text/html" }});
+      document.getElementById("negRes").textContent = type==="json" ? JSON.stringify(await res.json(), null, 2) : await res.text();
+    }
+    async function getStatus(code) {
+      const res = await fetch(`${baseURL}/api/status/${code}`);
+      document.getElementById("statusRes").textContent = `${res.status} - ${res.statusText}\n`+await res.text();
+    }
+    async function getOverview() {
+      const res = await fetch(`${baseURL}/api/overview`);
+      document.getElementById("overviewRes").textContent = await res.text();
+    }
+  </script>
+</body>
+</html>
